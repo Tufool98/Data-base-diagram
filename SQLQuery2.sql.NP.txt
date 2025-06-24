@@ -1,0 +1,109 @@
+-- 1)DDL
+
+create database TrainingCompany
+
+use TrainingCompany
+
+create table Employees 
+(
+	Ssn int primary key identity(1,1),
+	Fname nvarchar(20) not null,
+	Lname nvarchar(20) not null,
+	Gender bit default 0,
+	Birthdate date,
+	Super_id int,
+	foreign Key (super_id) references Employees(Ssn),
+);
+
+
+create table Department
+(
+	Dnum int primary key identity(1,1),
+	Hiredate date,
+	Dname nvarchar(20) not null,
+	Super_id int,
+	foreign Key (super_id) references Employees(Ssn),
+);
+
+create table Dept_location
+(
+	Dlocation nvarchar(100),
+	Dnum int,
+	Primary key (Dnum, Dlocation), 
+	Foreign key (Dnum) references Department(Dnum)
+);
+
+create table Project
+(
+	Pnum int primary key identity(1,1),
+	Pname nvarchar(20) not null,
+	Plocation nvarchar(100),
+	City nvarchar(20),
+	Dnum int,
+	Foreign key (Dnum) references Department(Dnum)
+);
+
+create table Work
+(
+	Workhours time,
+	Ssn int,
+	Pnum int,
+	Primary key (Ssn, Pnum),
+	Foreign key (Ssn) references Employees(Ssn),
+	Foreign key (Pnum) references Project(Pnum)
+);
+
+create table Emp_Dependent
+(
+	Dep_num int primary key identity(1,1),
+	Birhtdate date,
+	Gender bit default 0,
+	Ssn int,
+	Foreign key (Ssn) references Employees(Ssn),
+);
+alter table Employees
+add Dnum INT
+
+alter table Employees
+add constraint FK_Employee_Department
+foreign key (Dnum) references Department(Dnum);
+
+-- 2)DML
+insert into Employees(Fname, Lname, Gender, Birthdate, Super_id, Dnum) values 
+('Ali', 'Salim', 1, '1990-05-15', NULL, 1), 
+('Sara', 'Hassan', 0, '1992-08-20', 1, 1),  
+('Omar', 'Saeed', 1, '1988-11-10', NULL, 2), 
+('Laila', 'Nasser', 0, '1995-03-30', 3, 2);  
+select * from Employees 
+
+insert into Department (Hiredate, Dname, Super_id) values
+('2020-01-01', 'HR', NULL),
+('2021-02-01', 'IT', NULL);
+
+update Department SET Super_id = 1 WHERE Dnum = 1;
+update Department SET Super_id = 3 WHERE Dnum = 2;
+select * from Department
+
+insert into Dept_location (Dlocation, Dnum) values
+('Building A', 1),
+('Building B', 2);
+select * from Dept_location
+
+insert into Project (Pname, Plocation, City, Dnum) values
+('Training System', 'Room 101', 'Muscat', 1),
+('Website Upgrade', 'Room 202', 'Sohar', 2);
+select * from Project
+
+insert into Work (Workhours, Ssn, Pnum) values
+('08:00:00', 2, 1), 
+('07:30:00', 4, 2); 
+select * from Work
+
+insert into Emp_Dependent (Birhtdate, Gender, Ssn) values
+('2015-06-01', 0, 1), 
+('2017-09-15', 1, 3); 
+select * from Emp_Dependent
+
+delete from Emp_Dependent
+where Dep_num = 2;
+select * from Emp_Dependent
